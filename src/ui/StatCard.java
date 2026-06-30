@@ -11,6 +11,7 @@ import java.awt.*;
  */
 public class StatCard extends RoundedPanel {
 
+    private final JLabel captionLabel;
     private final JLabel valueLabel;
 
     public StatCard(String caption) {
@@ -18,16 +19,17 @@ public class StatCard extends RoundedPanel {
         setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
         setBorder(BorderFactory.createEmptyBorder(14, 18, 14, 18));
 
-        JLabel cap = UIHelper.label(caption.toUpperCase(), ColorPalette.TEXT_SECONDARY, Font.BOLD, 11);
-        cap.setAlignmentX(LEFT_ALIGNMENT);
+        captionLabel = UIHelper.label(caption.toUpperCase(), ColorPalette.TEXT_SECONDARY, Font.BOLD, 11);
+        captionLabel.setAlignmentX(LEFT_ALIGNMENT);
 
         valueLabel = UIHelper.label("0", ColorPalette.TEXT_PRIMARY, Font.BOLD, 24);
         valueLabel.setAlignmentX(LEFT_ALIGNMENT);
 
-        add(cap);
+        add(captionLabel);
         add(Box.createVerticalStrut(6));
         add(valueLabel);
     }
 
     public void setValue(String value) { valueLabel.setText(value); }
+    public void setCaption(String caption) { captionLabel.setText(caption.toUpperCase()); }
 }

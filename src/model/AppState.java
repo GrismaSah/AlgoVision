@@ -10,6 +10,7 @@ public final class AppState {
     private AppState() {}
 
     // Last run stats (updated live by the visualizer panels).
+    public static String lastModule = "\u2014";   // "Sorting" / "Searching" / "Graph"
     public static int    lastArraySize  = 0;
     public static int    lastComparisons = 0;
     public static int    lastSwaps      = 0;

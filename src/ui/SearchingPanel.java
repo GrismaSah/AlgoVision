@@ -38,6 +38,7 @@ public class SearchingPanel extends JPanel {
     private final StatCard probeCard = new StatCard("Probes");
     private final StatCard resultCard = new StatCard("Result");
     private int probes = 0;
+    private double computeMs = 0;
 
     private final JLabel defLabel = new JLabel();
     private final JLabel bestLabel = new JLabel(), avgLabel = new JLabel(), worstLabel = new JLabel();
@@ -55,7 +56,7 @@ public class SearchingPanel extends JPanel {
 
         wireActions();
         updateInfo();
-        generate(sizeSlider.getValue());
+        buildArray(sizeSlider.getValue());
     }
 
     private JComponent buildStatStrip() {
@@ -177,6 +178,12 @@ public class SearchingPanel extends JPanel {
     }
 
     private void generate(int size) {
+        buildArray(size);
+        publishRun();   // a freshly generated array shows up on the Dashboard immediately
+    }
+
+    /** Builds a sorted random array without touching shared Dashboard state (startup). */
+    private void buildArray(int size) {
         data = new int[size];
         for (int i = 0; i < size; i++) data[i] = 5 + rng.nextInt(96);
         Arrays.sort(data);   // keep sorted so binary search is valid
@@ -187,7 +194,7 @@ public class SearchingPanel extends JPanel {
     private void reset() {
         player.reset();
         canvas.reset();
-        probes = 0;
+        probes = 0; computeMs = 0;
         probeCard.setValue("0");
         resultCard.setValue("\u2014");
         messageLabel.setText("Ready");
@@ -199,7 +206,9 @@ public class SearchingPanel extends JPanel {
         canvas.reset();
         probes = 0;
         resultCard.setValue("\u2014");
+        long t0 = System.nanoTime();
         List<AlgorithmStep> steps = SearchingService.run(algo, data, target);
+        computeMs = (System.nanoTime() - t0) / 1_000_000.0;
         player.load(steps);
         player.setDelay(101 - speedSlider.getValue());
         player.play();
@@ -216,11 +225,22 @@ public class SearchingPanel extends JPanel {
             default: break;
         }
         if (s.message != null) messageLabel.setText(s.message);
+        publishRun();
         canvas.repaint();
     }
 
     private void onFinish() {
-        AppState.lastAlgorithm = (String) algoBox.getSelectedItem();
+        publishRun();
+    }
+
+    /** Search has a real array size and comparison count (the probes); no swaps. */
+    private void publishRun() {
+        AppState.lastModule     = "Searching";
+        AppState.lastArraySize  = data.length;
+        AppState.lastComparisons = probes;
+        AppState.lastSwaps      = 0;
+        AppState.lastExecMs     = computeMs;
+        AppState.lastAlgorithm  = (String) algoBox.getSelectedItem();
     }
 
     private void updateInfo() {

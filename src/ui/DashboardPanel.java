@@ -102,9 +102,22 @@ public class DashboardPanel extends JPanel {
         return card;
     }
 
-    /** Refresh the stat cards from AppState (called when the dashboard is shown). */
+    /** Refresh the stat cards from AppState (called when the dashboard is shown).
+     *  Cards relabel themselves to suit the module that last ran, since a graph
+     *  traversal has different metrics (nodes/visited) than an array sort. */
     public void refresh() {
-        boolean hasData = AppState.lastArraySize > 0;
+        boolean hasData = !AppState.lastModule.equals("\u2014");
+
+        if (AppState.lastModule.equals("Graph")) {
+            sizeCard.setCaption("Nodes");
+            cmpCard.setCaption("Visited");
+            swapCard.setCaption("Edges");
+        } else {
+            sizeCard.setCaption("Array Size");
+            cmpCard.setCaption("Comparisons");
+            swapCard.setCaption("Swaps");
+        }
+
         sizeCard.setValue(hasData ? String.valueOf(AppState.lastArraySize) : "\u2014");
         cmpCard.setValue(hasData ? String.valueOf(AppState.lastComparisons) : "\u2014");
         swapCard.setValue(hasData ? String.valueOf(AppState.lastSwaps) : "\u2014");

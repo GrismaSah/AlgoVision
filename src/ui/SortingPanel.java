@@ -285,6 +285,7 @@ public class SortingPanel extends JPanel {
     /** Push the current run's numbers into AppState so the Dashboard reflects them
      *  the moment it's opened — live during the animation, not only when it ends. */
     private void publishRun() {
+        AppState.lastModule     = "Sorting";
         AppState.lastArraySize  = data.length;
         AppState.lastComparisons = comparisons;
         AppState.lastSwaps      = swaps;

@@ -33,6 +33,9 @@ public class GraphPanel extends JPanel {
     private final JLabel defLabel = new JLabel();
     private final JLabel bestLabel = new JLabel(), spaceLabel = new JLabel();
 
+    private int visited = 0;
+    private double computeMs = 0;
+
     public GraphPanel() {
         setBackground(ColorPalette.BACKGROUND);
         setLayout(new BorderLayout(16, 16));
@@ -165,7 +168,10 @@ public class GraphPanel extends JPanel {
     private void start() {
         canvas.reset();
         order.setLength(0);
+        visited = 0;
+        long t0 = System.nanoTime();
         List<AlgorithmStep> steps = GraphService.run((String) algoBox.getSelectedItem(), 0);
+        computeMs = (System.nanoTime() - t0) / 1_000_000.0;
         player.load(steps);
         player.setDelay(420 - speedSlider.getValue() * 4);
         player.play();
@@ -174,6 +180,7 @@ public class GraphPanel extends JPanel {
     private void applyStep(AlgorithmStep s) {
         switch (s.type) {
             case VISIT_NODE:
+                visited++;
                 canvas.setCurrent(s.a);
                 if (order.length() > 0) order.append("  \u2192  ");
                 order.append(s.a);
@@ -185,11 +192,23 @@ public class GraphPanel extends JPanel {
             default: break;
         }
         if (s.message != null) messageLabel.setText(s.message);
+        publishRun();
     }
 
     private void onFinish() {
         canvas.finish();
-        AppState.lastAlgorithm = (String) algoBox.getSelectedItem();
+        publishRun();
+    }
+
+    /** Graphs don't have arrays/swaps, so the Dashboard relabels these cards as
+     *  Nodes / Visited / Edges (see DashboardPanel.refresh). */
+    private void publishRun() {
+        AppState.lastModule     = "Graph";
+        AppState.lastArraySize  = GraphService.NODES;
+        AppState.lastComparisons = visited;
+        AppState.lastSwaps      = GraphService.EDGES.length;
+        AppState.lastExecMs     = computeMs;
+        AppState.lastAlgorithm  = (String) algoBox.getSelectedItem();
     }
 
     private void updateInfo() {
