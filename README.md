@@ -34,6 +34,29 @@ util/      shared helpers (ColorPalette, UIHelper)
 ui/        all Swing screens & components (MainFrame, BarCanvas, GraphCanvas, panels)
 Main.java  entry point (launches the UI on the Event Dispatch Thread)
 ```
+## 📸 Application Screenshots
+
+### 🏠 Dashboard
+
+![Dashboard](screenshots/Dashboard.png)
+
+---
+
+### 📊 Sorting Visualizer
+
+![Sorting](screenshots/Sorting.png)
+
+---
+
+### 🔍 Searching Visualizer
+
+![Searching](screenshots/Searching.png)
+
+---
+
+### 🌐 Graph Visualizer
+
+![Graph](screenshots/Graph.png)
 
 The key design idea: algorithms **record** a list of `AlgorithmStep` snapshots, and
 the UI simply **replays** them with a `javax.swing.Timer`. This cleanly separates
